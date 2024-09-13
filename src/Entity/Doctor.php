@@ -5,9 +5,11 @@ namespace App\Entity;
 use App\Repository\DoctorRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert; // https://symfony.com/doc/current/validation.html
+
 
 #[ORM\Entity(repositoryClass: DoctorRepository::class)]
-#[ApiResource] // Cette annotation
+#[ApiResource]
 class Doctor
 {
     #[ORM\Id]
@@ -15,24 +17,43 @@ class Doctor
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\Length(min: 2, max: 50)]
     #[ORM\Column(length: 50)]
     private ?string $firstname = null;
 
+    #[Assert\Length(min: 2, max: 50)]
     #[ORM\Column(length: 50)]
     private ?string $lastname = null;
 
+    #[Assert\Choice([
+        "Cardiologie",
+        "Dermatologie",
+        "Neurologie",
+        "Pédiatrie",
+        "Oncologie",
+        "Psychiatrie",
+        "Chirurgie générale",
+        "Gynécologie-obstétrique",
+        "Ophtalmologie",
+        "Anesthésiologie"
+    ])]
+    #[Assert\NotBlank()]
     #[ORM\Column(length: 50)]
     private ?string $speciality = null;
 
+    #[Assert\Length(min: 5, max: 255)]
     #[ORM\Column(length: 255)]
     private ?string $address = null;
 
+    #[Assert\Length(min: 5, max: 50)]
     #[ORM\Column(length: 50)]
     private ?string $city = null;
 
+    #[Assert\Regex('/^\d{5}$/')] // 5 digits
     #[ORM\Column(length: 5)]
     private ?string $zip = null;
 
+    #[Assert\Regex('/^\d{10}$/')] // 10 digits
     #[ORM\Column(length: 12, nullable: true)]
     private ?string $phone = null;
 
@@ -115,6 +136,11 @@ class Doctor
 
     public function getPhone(): ?string
     {
+        if (strlen($this->phone) === 10) { // https://www.php.net/manual/fr/function.wordwrap.php
+            $phone = preg_replace('/[^0-9]/', '', $this->phone); // https://www.php.net/manual/fr/function.preg-replace.php
+            return wordwrap($phone, 2, ' ', true); // https://www.php.net/manual/fr/function.wordwrap.php
+
+        }
         return $this->phone;
     }
 

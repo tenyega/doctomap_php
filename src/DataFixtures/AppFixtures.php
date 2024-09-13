@@ -33,7 +33,7 @@ class AppFixtures extends Fixture
             $doctor->setAddress($faker->streetAddress());
             $doctor->setCity($faker->city());
             $doctor->setZip($faker->postcode());
-            $doctor->setPhone($faker->phoneNumber());
+            $doctor->setPhone($faker->numerify('06########'));
 
             $manager->persist($doctor);
         }
